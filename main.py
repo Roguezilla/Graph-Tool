@@ -1,7 +1,7 @@
 __author__ = 'roguezilla'
 __version__ = 'release 1.0'
 
-import pyglet, math, ctypes, numpy, time
+import pyglet, math, ctypes, numpy, time, sys
 from pyglet.gl import *
 from OpenGL.GLUT import *
 
@@ -98,8 +98,5 @@ class graph_window(pyglet.window.Window):
 		glut_string(0, 2, 'Point Coordinates: {}, {}'.format(self.values[0][self.point_index], self.values[1][self.point_index]))
 
 if __name__ == "__main__":
-	print('Welcome to Graph Tool by roguezilla.')
-	print('You will be asked to input an equation in a moment(input math.cos(x) for example).')
-	time.sleep(1)
-	graph_window = graph_window(input('Input equation: '), width=800, height=700,caption='Graph Tool')
+	graph_window = graph_window(sys.argv[1], width=800, height=700,caption='Graph Tool')
 	pyglet.app.run()
