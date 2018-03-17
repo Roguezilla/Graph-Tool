@@ -16,7 +16,7 @@ def glut_string(x, y, text, color = [1,1,1]):
 
 
 class graph_window(pyglet.window.Window):
-	def __init__(self, equation, *args, **kwargs):
+	def __init__(self, equation, x_min, x_max, *args, **kwargs):
 		super(graph_window, self).__init__(*args, **kwargs)
 
 		"""Stores x:y values."""
@@ -26,7 +26,7 @@ class graph_window(pyglet.window.Window):
 		self.equation = lambda x: eval(equation)
 
 		"""x variable, adjust for each equation."""
-		for i in numpy.arange(-7.95, 8.05, 0.1):
+		for i in numpy.arange(float(x_min), float(x_max), 0.1):
 			self.values[0].append(i)
 
 		"""y variable, got by using the input equation."""
@@ -98,5 +98,5 @@ class graph_window(pyglet.window.Window):
 		glut_string(0, 2, 'Point Coordinates: {}, {}'.format(self.values[0][self.point_index], self.values[1][self.point_index]))
 
 if __name__ == "__main__":
-	graph_window = graph_window(sys.argv[1], width=800, height=700,caption='Graph Tool')
+	graph_window = graph_window(sys.argv[1], sys.argv[2], sys.argv[3], width=800, height=700,caption='Graph Tool')
 	pyglet.app.run()
