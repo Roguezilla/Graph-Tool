@@ -3,7 +3,7 @@ from pyglet.gl import *
 from OpenGL.GLUT import *
 
 ctx = bimpy.Context()
-ctx.init(365, 250, 'Graph Settings')
+ctx.init(330,110, 'Graph Settings')
 
 equation = bimpy.String('math.cos(x)')
 x_min = bimpy.Float(-5)
@@ -138,13 +138,13 @@ class graph_window(pyglet.window.Window):
 while(not ctx.should_close()):
 	ctx.new_frame()
 
-	bimpy.set_next_window_size(bimpy.Vec2(200, 150), bimpy.Condition.Once)
-	if bimpy.begin("Menu", flags=(bimpy.WindowFlags.AlwaysAutoResize | bimpy.WindowFlags.NoTitleBar)):
+	bimpy.set_next_window_size(bimpy.Vec2(269,58), bimpy.Condition.Once)
+	if bimpy.begin("Menu", flags=(bimpy.WindowFlags.AlwaysAutoResize | bimpy.WindowFlags.NoTitleBar | bimpy.WindowFlags.NoMove)):
 		bimpy.input_text('Equation', equation, 256)
 		bimpy.input_float('X Min Boundary', x_min)
 		bimpy.input_float('X Max Boundary', x_max)
 		if bimpy.button("Draw graph"):
-			graph_window(equation.value, -5, 5, width=700, height=600,caption='Graph Tool')
+			graph_window(equation.value, -5, 5, width=700, height=600,caption='Graph Display')
 			pyglet.app.run()
 	bimpy.end()
 
