@@ -1,7 +1,4 @@
-__author__ = 'roguezilla'
-__version__ = 'release 1.0'
-
-import pyglet, math, ctypes, numpy, time, sys
+import pyglet, math, ctypes, numpy, os
 from pyglet.gl import *
 from OpenGL.GLUT import *
 
@@ -14,32 +11,50 @@ def glut_string(x, y, text, color = [1,1,1]):
 	for ch in text:
 		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ctypes.c_int(ord(ch)))
 
+def circle(x, y, radius):
+    iterations = int(2*radius*math.pi)
+    s = math.sin(2*math.pi / iterations)
+    c = math.cos(2*math.pi / iterations)
+
+    dx, dy = radius, 0
+
+    glBegin(GL_TRIANGLE_FAN)
+    glVertex2f(x, y)
+    for i in range(iterations+1):
+        glVertex2f(x+dx, y+dy)
+        dx, dy = (dx*c - dy*s), (dy*c + dx*s)
+    glEnd()
 
 class graph_window(pyglet.window.Window):
 	def __init__(self, equation, x_min, x_max, *args, **kwargs):
 		super(graph_window, self).__init__(*args, **kwargs)
 
-		"""Stores x:y values."""
+		#Stores x & y values.
 		self.values = [[],[]]
 
-		"""Our equation, you are asked to input it when the program starts."""
+		#Our equation(sys.argv[1])
 		self.equation = lambda x: eval(equation)
 
-		"""x variable, adjust for each equation."""
+		#x boundaries for the equation, adjust via x_mix(sys.argv[2]) and x_max(sys.argv[3])
 		for i in numpy.arange(float(x_min), float(x_max), 0.1):
 			self.values[0].append(i)
 
-		"""y variable, got by using the input equation."""
+		#y variable, got via the equation.
 		for each_value in self.values[0]:
 			self.values[1].append(self.equation(each_value))
 
-		"""Other varibales"""
-		self.MULT = 50 				 # the window is pretty big so we need to adjust point values to meet the size
+		#Other varibales
+		self.MULT = 50 				 #we have to adjust (x, y) values because they are too small 
 
-		self.ADD_X = self.width / 2  # ADD_X and ADD_Y exist because we need to adjust point position 
-		self.ADD_Y = self.height / 2 # because we start at 0,0 and this way we can move out points to the right point in the graph
+		self.ADD_X = self.width / 2  #ADD_X and ADD_Y exist because we need to adjust point positions
+		self.ADD_Y = self.height / 2 #because we cannot translate point origin like in p5 framework
 
-		self.point_index = 0 		 # each x and y variable has an index, this is used for drawing a certain point
+		self.point_index = 0 		 #each (x, y) pair has an index which we use for drawing the current point
+
+		ctypes.windll.kernel32.SetConsoleTitleW('Equation: {} | Boundaries: {} to {}'.format(equation, x_min, x_max))
+		print('Point table:')
+		for i in range(len(self.values[0])):
+			print('x: {} | y: {}'.format(self.values[0][i], self.values[1][i]))
 
 	def on_key_press(self, button, modifiers):
 		if button == pyglet.window.key.ESCAPE: self.close()
@@ -60,7 +75,7 @@ class graph_window(pyglet.window.Window):
 		glClear(GL_COLOR_BUFFER_BIT)
 		glLoadIdentity()
 
-		"""Draws the base of graph."""
+		#Draws the base graph.
 		glBegin(GL_LINES)
 		glVertex2f(0, self.ADD_Y)
 		glVertex2f(self.ADD_X * 2, self.ADD_Y)
@@ -70,33 +85,51 @@ class graph_window(pyglet.window.Window):
 		glVertex2f(self.ADD_X, self.ADD_Y * 2)
 		glEnd()
 
-		"""Draws a line which separates graph and a small spot which will be used to draw point coordinates."""
+		#Draws a line which separates the graph and current point coordinates string.
 		glBegin(GL_LINES)
 		glVertex2f(0,  15)
 		glVertex2f(self.ADD_X * 2, 15)
 		glEnd()
 
-		"""Draws the equation."""
+		#Draws the equation.
 		glBegin(GL_LINES)
 		for i in range(len(self.values[0]) - 1):
 			glVertex2f(self.values[0][i] * self.MULT + self.ADD_X, self.values[1][i] * self.MULT + self.ADD_Y)
 			glVertex2f(self.values[0][i + 1] * self.MULT + self.ADD_X, self.values[1][i + 1] * self.MULT + self.ADD_Y)
 		glEnd()
 
-		"""Draws a square arround the point which corresponds to current point index."""
+		#Draws lines on the axes
+		glBegin(GL_LINES)
+		for i in range(8):
+			glVertex2f(i * self.MULT + self.ADD_X, .2 * self.MULT + self.ADD_Y)
+			glVertex2f(i * self.MULT + self.ADD_X, -.2 * self.MULT + self.ADD_Y)
+		glEnd()
+		glBegin(GL_LINES)
+		for i in range(8):
+			glVertex2f(-i * self.MULT + self.ADD_X, .2 * self.MULT + self.ADD_Y)
+			glVertex2f(-i * self.MULT + self.ADD_X, -.2 * self.MULT + self.ADD_Y)
+		glEnd()
+		glBegin(GL_LINES)
+		for i in range(7):
+			glVertex2f(.2 * self.MULT + self.ADD_X, i * self.MULT + self.ADD_Y)
+			glVertex2f(-.2 * self.MULT + self.ADD_X, i * self.MULT + self.ADD_Y)
+		glEnd()
+		glBegin(GL_LINES)
+		for i in range(6):
+			glVertex2f(.2 * self.MULT + self.ADD_X, -i * self.MULT + self.ADD_Y)
+			glVertex2f(-.2 * self.MULT + self.ADD_X, -i * self.MULT + self.ADD_Y)
+		glEnd()
+
+		#Draws a filled circle arround the current point index.
 		glPushAttrib(GL_CURRENT_BIT)
 		glColor3f(1,0,0)
-		glBegin(GL_QUADS)
-		glVertex2f(self.values[0][self.point_index] * self.MULT + self.ADD_X + 5, self.values[1][self.point_index] * self.MULT + self.ADD_Y + 5)
-		glVertex2f(self.values[0][self.point_index] * self.MULT + self.ADD_X + 5, self.values[1][self.point_index] * self.MULT + self.ADD_Y - 5)
-		glVertex2f(self.values[0][self.point_index] * self.MULT + self.ADD_X - 5, self.values[1][self.point_index] * self.MULT + self.ADD_Y - 5)
-		glVertex2f(self.values[0][self.point_index] * self.MULT + self.ADD_X - 5, self.values[1][self.point_index] * self.MULT + self.ADD_Y + 5)
-		glEnd()
+		circle(self.values[0][self.point_index] * self.MULT + + self.ADD_X, self.values[1][self.point_index] * self.MULT + + self.ADD_Y, 5)
 		glPopAttrib()
 
-		"""Draws point coordinates in the zone mentioned above."""
-		glut_string(0, 2, 'Point Coordinates: {}, {}'.format(self.values[0][self.point_index], self.values[1][self.point_index]))
+
+		#Draws point coordinates.
+		glut_string(0, 2, 'Current Point: {}, {}'.format(self.values[0][self.point_index], self.values[1][self.point_index]))
 
 if __name__ == "__main__":
-	graph_window = graph_window(sys.argv[1], sys.argv[2], sys.argv[3], width=800, height=700,caption='Graph Tool')
+	graph_window(sys.argv[1], sys.argv[2], sys.argv[3], width=700, height=600,caption='Graph Tool')
 	pyglet.app.run()
