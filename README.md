@@ -9,5 +9,6 @@ python main.py equation x_min x_max
 ```
 Example
 ```
-python main.py math.cos(x) -7.95 8.05
+python main.py math.sin(x) -5 5
 ```
+![Alt text](https://i.imgur.com/wgdk14k.png)
