@@ -7,4 +7,4 @@ You may not need to DLLs, I need them because I'm too lazy to set paths.
 ```
 python main.py
 ```
-![Alt text](https://i.imgur.com/H3tl4fZ.png)
+![Alt text](https://i.imgur.com/HB2CsVW.png)
