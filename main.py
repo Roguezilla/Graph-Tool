@@ -1,7 +1,13 @@
-import pyglet, math, ctypes, numpy, os
+import pyglet, math, ctypes, numpy, bimpy
 from pyglet.gl import *
 from OpenGL.GLUT import *
 
+ctx = bimpy.Context()
+ctx.init(365, 250, 'Graph Settings')
+
+equation = bimpy.String('math.cos(x)')
+x_min = bimpy.Float(-5)
+x_max = bimpy.Float(5)
 
 def glut_string(x, y, text, color = [1,1,1]):
 	"""Draw a string using GLUT functions."""
@@ -32,10 +38,10 @@ class graph_window(pyglet.window.Window):
 		#Stores x & y values.
 		self.values = [[],[]]
 
-		#Our equation(sys.argv[1])
+		#Our equation set via menu
 		self.equation = lambda x: eval(equation)
 
-		#x boundaries for the equation, adjust via x_mix(sys.argv[2]) and x_max(sys.argv[3])
+		#x boundaries for the equation, adjust via menu
 		for i in numpy.arange(float(x_min), float(x_max), 0.1):
 			self.values[0].append(i)
 
@@ -51,7 +57,6 @@ class graph_window(pyglet.window.Window):
 
 		self.point_index = 0 		 #each (x, y) pair has an index which we use for drawing the current point
 
-		ctypes.windll.kernel32.SetConsoleTitleW('Equation: {} | Boundaries: {} to {}'.format(equation, x_min, x_max))
 		print('Point table:')
 		for i in range(len(self.values[0])):
 			print('x: {} | y: {}'.format(self.values[0][i], self.values[1][i]))
@@ -130,6 +135,17 @@ class graph_window(pyglet.window.Window):
 		#Draws point coordinates.
 		glut_string(0, 2, 'Current Point: {}, {}'.format(self.values[0][self.point_index], self.values[1][self.point_index]))
 
-if __name__ == "__main__":
-	graph_window(sys.argv[1], sys.argv[2], sys.argv[3], width=700, height=600,caption='Graph Tool')
-	pyglet.app.run()
+while(not ctx.should_close()):
+	ctx.new_frame()
+
+	bimpy.set_next_window_size(bimpy.Vec2(200, 150), bimpy.Condition.Once)
+	if bimpy.begin("Menu", flags=(bimpy.WindowFlags.AlwaysAutoResize | bimpy.WindowFlags.NoTitleBar)):
+		bimpy.input_text('Equation', equation, 256)
+		bimpy.input_float('X Min Boundary', x_min)
+		bimpy.input_float('X Max Boundary', x_max)
+		if bimpy.button("Draw graph"):
+			graph_window(equation.value, -5, 5, width=700, height=600,caption='Graph Tool')
+			pyglet.app.run()
+	bimpy.end()
+
+	ctx.render()
