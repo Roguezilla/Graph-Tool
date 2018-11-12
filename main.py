@@ -131,7 +131,6 @@ class graph_window(pyglet.window.Window):
 		circle(self.values[0][self.point_index] * self.MULT + + self.ADD_X, self.values[1][self.point_index] * self.MULT + + self.ADD_Y, 5)
 		glPopAttrib()
 
-
 		#Draws point coordinates.
 		glut_string(0, 2, 'Current Point: {}, {}'.format(self.values[0][self.point_index], self.values[1][self.point_index]))
 
@@ -139,13 +138,13 @@ while(not ctx.should_close()):
 	ctx.new_frame()
 
 	bimpy.set_next_window_size(bimpy.Vec2(269,58), bimpy.Condition.Once)
-	if bimpy.begin("Menu", flags=(bimpy.WindowFlags.AlwaysAutoResize | bimpy.WindowFlags.NoTitleBar | bimpy.WindowFlags.NoMove)):
-		bimpy.input_text('Equation', equation, 256)
-		bimpy.input_float('X Min Boundary', x_min)
-		bimpy.input_float('X Max Boundary', x_max)
-		if bimpy.button("Draw graph"):
-			graph_window(equation.value, -5, 5, width=700, height=600,caption='Graph Display')
-			pyglet.app.run()
+	bimpy.begin('', flags=(bimpy.WindowFlags.AlwaysAutoResize | bimpy.WindowFlags.NoTitleBar | bimpy.WindowFlags.NoMove))
+	bimpy.input_text('Equation', equation, 256)
+	bimpy.input_float('X Min Boundary', x_min)
+	bimpy.input_float('X Max Boundary', x_max)
+	if bimpy.button('Draw graph'):
+		graph_window(equation.value, -5, 5, width=700, height=600,caption='Graph Display')
+		pyglet.app.run()
 	bimpy.end()
 
 	ctx.render()
