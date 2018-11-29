@@ -1,7 +1,7 @@
 # Graph-Tool
 A tool to display equations. Started as pseudo code in a philosophy notebook ended up in this.
 ```
-The DLLs aren't necessary if you have set PATH for them.
+The DLLs may not be necessary for you.
 ```
 # Usage
 ```
